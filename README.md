@@ -5,12 +5,12 @@ and allow you to run Machine Learning models from a server. Started as a univers
 
 ### Example of the Data View Tab:
 
-![Interface options 1](https://imgur.com/FFogpHt)
+![](https://i.imgur.com/FFogpHt.png)
 
 ### Example of the Explore & Visualize Tab:
 
-![Interface options 2](https://imgur.com/zMMcDwp)
+![Interface options 2](https://i.imgur.com/zMMcDwp.png)
 
 ### Example of the Analyze & Predict Tab:
 
-![Interface options 3](https://imgur.com/RNqpfo9)
+![Interface options 3](https://i.imgur.com/RNqpfo9.png)
