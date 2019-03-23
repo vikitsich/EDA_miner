@@ -20,6 +20,9 @@ __pycache__/*
 *make changes
 *_george_and_kostas_rules.gr
 test branch
+*newLine
+*kostasLocalBranch
+
 db.*
 *.db
 *ropeproject*
