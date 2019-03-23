@@ -15,6 +15,7 @@ __pycache__/*
 *.vec
 *_data.txt
 
+*__kostas.com
 
 db.*
 *.db
