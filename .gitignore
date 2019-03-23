@@ -20,6 +20,7 @@ __pycache__/*
 *make changes
 *_george_and_kostas_rules.gr
 *newLine
+*kostasLocalBranch
 
 db.*
 *.db
