@@ -1,8 +1,8 @@
-from dash.dependencies import Input, Output, Event, State
+from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 
-from app import app
+from server import app
 from utils import load_df, r
 from apps.view_tabs import Exploration, KPIs
 from apps.view_tabs import Exploration_Options, KPI_Options
@@ -61,6 +61,9 @@ def tab_subpages(tab, user_id):
      State('viz_tabs', 'value')])
 def plot_graph(xvars, yvars, user_id, viz_tab):
     df = load_df(r, user_id)
+
+    if any(x is None for x in [xvars, yvars, df]):
+        return {}
 
     if viz_tab == "exploration":
         traces = Exploration.simple_scatter(df, xvars, yvars)

@@ -1,8 +1,8 @@
-from dash.dependencies import Input, Output, Event, State
+from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 
-from app import app
+from server import app
 from utils import parse_contents
 
 Upload_Options = [

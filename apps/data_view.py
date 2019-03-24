@@ -1,11 +1,11 @@
-from dash.dependencies import Input, Output, Event, State
+from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
 
 import dash_table
 import dash_callback_chain as chainvis
 
-from app import app
+from server import app
 from utils import load_df, r
 from apps.data_tabs import APIs
 from apps.data_tabs import Upload_Options, View_Options, API_Options
