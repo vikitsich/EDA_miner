@@ -1,13 +1,12 @@
-from dash import Dash
 from dash.dependencies import Input, Output, Event, State
 import dash_core_components as dcc
 import dash_html_components as html
+
 import dash_table
+import dash_callback_chain as chainvis
 
-# import dash_callback_chain as chainvis
-
-from utils import mapping, load_df, cleanup, r
-from apis import twitter_connect
+from utils import cleanup, r
+from menus import SideBar, MainMenu
 
 import pandas as pd
 import base64
@@ -33,8 +32,6 @@ def serve_layout():
 
     return html.Div(children=[
 
-        dcc.Location(id='url', refresh=False),
-
         # TODO: Better implementation of sessions.
         # This generates a unique id for the session, based on which
         # one can keep his data in disk. This may need changing to
@@ -43,75 +40,31 @@ def serve_layout():
         html.H2(session_id, id="user_id", style={"display":"none"}),
 
         # Sidebar / menu
-        html.Div(children=[
-            html.Img(src='data:image/png;base64,{}'.format(base64.b64encode(
-                open("y2d.png", 'rb').read()).decode()),
-                     style={
-                         'height': '150px',
-                         "display": "block",
-                    }),
-
-            html.H2("Sidemenu1"),
-            html.Br(),
-
-            html.Button('Show / Hide', id='button_collapse'),
-            html.Div(id='button_container', children=[
-                html.Ul([
-                    html.Li("I'm not padded :'("),
-                    html.Li('I am padded', style={"paddingLeft":"30px"}),
-                    html.Li('I am even more padded', style={"paddingLeft":"60px"}),
-                ])
-            ]),
-            html.H2("Sidemenu2"),
-            html.Button("Ich bin ein button"),
-            html.H2("Sidemenu4"),
-            # chainvis.CallbackChainVisualizer(id="chain"),
-        ], className="two columns"),
+        html.Div(children=SideBar, className="two columns", id="sidebar"),
 
         # main Div
-        html.Div(children=[
-            html.Div(children=[
-                dcc.Tabs(id="high_level_tabs", value='data', children=[
-                    dcc.Tab(label='Data view', value='data',
-                            id="data"),
-                    dcc.Tab(label='Explore & Visualize', value='EDA',
-                            id="EDA"),
-                    dcc.Tab(label='Analyze & Predict', value='modelling',
-                            id="modelling"),
-                ]),
-            ]),
-
-            html.Div(id="high_level_tabs_content"),
-
-            # Due to a known Dash bug, the table
-            # must be present in the first layout
-            html.Div(id="table_container", children=[
-                dash_table.DataTable(id='table',),
-            ], style={"display":"none"}),
-
-        ], className="nine columns"),
+        html.Div(children=MainMenu, className="nine columns", id="mainmenu"),
 
     ], className="row")
 
 
 app.layout = serve_layout
-# app.scripts.config.serve_locally = True
 
 
 # This is to display the callback chains
-# @app.callback( Output('chain', 'dot'), [Input('chain', 'id')] )
-# def show_chain(s):
-#     return chainvis.dot_chain(app, ["show_chain"])
+@app.callback( Output('chain', 'dot'), [Input('chain', 'id')] )
+def show_chain(s):
+    return chainvis.dot_chain(app, ["show_chain"])
 
 
-
-@app.callback(Output('high_level_tabs_content', 'children'),
+# Input and Output defined in MainMenu
+@app.callback(Output('selected_subpage', 'children'),
               [Input('high_level_tabs', 'value')])
 def high_level_tabs(tab):
     """
         For the first level of tabs, decide which submenu to
         return. Choices are: Data View, Exploratory Data Analysis
-        and Modelling (stats, )
+        and Modelling.
     """
 
     if tab == 'EDA':
@@ -125,7 +78,7 @@ def high_level_tabs(tab):
 
 
 ## When the sidebar button is clicked, collapse the div
-@app.callback(Output('button_container', 'style'),
+@app.callback(Output('sidebar_collapsible_button', 'style'),
               [Input('button_collapse', 'n_clicks')],)
 def button_toggle(n_clicks):
     if n_clicks % 2 == 1:
@@ -133,15 +86,12 @@ def button_toggle(n_clicks):
     else:
         return {'display': 'block'}
 
-
-
+## Only exists due to a known bug in dash
 @app.callback(Output("user_id", "children"),
               [Input("table", "data")],
               [State("user_id", "children")])
-def passing(data, user_id):
-    """Only exists due to a known bug in dash"""
+def debug_func(data, user_id):
     return user_id
-
 
 
 

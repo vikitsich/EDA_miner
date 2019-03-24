@@ -1,32 +1,21 @@
-from dash import Dash
 from dash.dependencies import Input, Output, Event, State
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_table
-
-import plotly.graph_objs as go
-
-import dash_callback_chain as chainvis
-
-import peakutils
-from utils import mapping, load_df, cleanup, r
-from apis import twitter_connect
-
-import pandas as pd
-import base64
-import datetime
-import io
-import atexit
-import uuid
-import redis
 
 from app import app
+from utils import load_df, r
+from apps.view_tabs import Exploration, KPIs
+from apps.view_tabs import Exploration_Options, KPI_Options
+from apps.view_tabs import Exploration3D_Options, Network_Options
+
+import plotly.graph_objs as go
+import peakutils
 
 
 
 layout = html.Div(children=[
     html.Div(children=[
-        dcc.Tabs(id="graphs", value='regression', children=[
+        dcc.Tabs(id="viz_tabs", value='exploration', children=[
             dcc.Tab(label='Exploratory analyis', value='exploration',
                     id="exploration"),
             dcc.Tab(label='Key performance indicators', value='kpi',
@@ -42,92 +31,49 @@ layout = html.Div(children=[
 
 
 @app.callback(Output('visuals-content', 'children'),
-              [Input('graphs', 'value')],
+              [Input('viz_tabs', 'value')],
               [State("user_id", "children")])
-def low_level_tabs_visualization(tab, user_id):
+def tab_subpages(tab, user_id):
 
     df = load_df(r, user_id)
+
+    if df is None:
+        return html.H4("No data currently uploaded")
 
     if tab == 'exploration':
-        return html.Div(children=[
-            html.Button("Data exploration", id="r2d2"),
+        return Exploration_Options(df)
 
-            html.H4("X variable:"),
-            dcc.Dropdown(
-                options=[
-                    {'label': col, 'value': col}
-                    for col in df.columns],
-                multi=False,
-                id="xvar_eda",
-                value=df.columns[-1],
-            ),
-            html.H4("Variables:"),
-            dcc.Dropdown(
-                options=[
-                    {'label': col, 'value': col}
-                    for col in df.columns],
-                multi=False,
-                id="yvar_eda",
-                value=df.columns[-1],
-            ),
-            dcc.Graph(id="graph2d"),
-
-
-        ])
     elif tab == 'kpi':
-
-        return html.Div(children=[
-            html.H4("X variable:"),
-            dcc.Dropdown(
-                options=[
-                    {'label': col, 'value': col}
-                    for col in df.columns],
-                multi=False,
-                id="xvar_kpi",
-                value=df.columns[-1],
-            ),
-            html.H4("Variables:"),
-            dcc.Dropdown(
-                options=[
-                    {'label': col, 'value': col}
-                    for col in df.columns],
-                multi=True,
-                id="yvar_kpi",
-                value=df.columns[-1],
-            ),
-            dcc.Graph(id="baseline_graph"),])
+        return KPI_Options(df)
 
     elif tab == "graphs3d":
-        return html.Div(children=[
-            html.Button("mpl3d or mpld3 ??!!", id="d33d"),
-        ])
+        return Exploration3D_Options(df)
+
     elif tab == "networks":
-        return html.Div(children=[
-            html.Button("networkx is awesome", id="nx"),
-        ])
+        return Network_Options(df)
 
 
 @app.callback(
-    Output("graph2d", "figure"),
-    [Input("xvar_eda", "value"),
-     Input("yvar_eda", "value")],
-    [State("user_id", "children")])
-def plot_graph2d(xvars, yvars, user_id):
+    Output("graph", "figure"),
+    [Input("xvars", "value"),
+     Input("yvars", "value")],
+    [State("user_id", "children"),
+     State('viz_tabs', 'value')])
+def plot_graph(xvars, yvars, user_id, viz_tab):
     df = load_df(r, user_id)
 
+    if viz_tab == "exploration":
+        traces = Exploration.simple_scatter(df, xvars, yvars)
 
-    traces = [
-        go.Scatter(
-            x=df[xvars],
-            y=df[yvars],
-            mode='markers',
-            opacity=0.7,
-            marker={
-                'size': 15,
-                'line': {'width': 0.5, 'color': 'white'}
-            },
-        ),
-    ]
+    elif viz_tab == "kpi":
+        if not isinstance(yvars, list):
+            yvars = [yvars]
+        traces = KPIs.baseline_graph(df, xvars, yvars)
+
+    else:
+        # simple pie chart
+        traces = [{'values': [[10,90],[5, 95],[15,85],[20,80]][3],
+                   'type': 'pie',},]
 
     return {
         'data': traces,
@@ -137,60 +83,5 @@ def plot_graph2d(xvars, yvars, user_id):
             margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
             legend={'x': 0, 'y': 1},
             hovermode='closest'
-            )
-
-    }
-
-
-
-@app.callback(
-    Output("baseline_graph", "figure"),
-    [Input("xvar_kpi", "value"),
-     Input("yvar_kpi", "value")],
-    [State("user_id", "children")])
-def plot_baseline_graph(xvars, yvars, user_id):
-
-    df = load_df(r, user_id)
-
-    if not isinstance(yvars, list):
-        yvars = [yvars]
-
-    print(yvars)
-
-    traces = [
-        go.Scatter(
-            x=df[xvars],
-            y=peakutils.baseline(df[yvars[0]]),
-            mode='lines',
-            opacity=0.7,
-            marker={
-                'size': 15,
-                'line': {'width': 0.5, 'color': (0,100,255)}
-            },
-            name="Baseline",
-        )] + [
-        go.Scatter(
-            x=df[xvars],
-            y=df[yvar],
-            mode='lines+markers',
-            opacity=0.7,
-            marker={
-                'size': 8,
-                'line': {'width': 0.5, 'color': 'rgb(210, 40, 180)'},
-                'color': 'rgb(180, 35, 180)'
-            },
-            name="Volume"
         )
-        for yvar in yvars]
-
-    return {
-        'data': traces,
-        'layout': go.Layout(
-            xaxis={'title': xvars},
-            yaxis={'title': yvars},
-            margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
-            legend={'x': 0, 'y': 1},
-            hovermode='closest'
-            )
-
     }

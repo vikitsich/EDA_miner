@@ -1,5 +1,21 @@
+import dash_core_components as dcc
+import dash_html_components as html
+
 import twitter
 
+
+API_Options = html.Div(children=[
+    html.H4("Connect to an API from the list:"),
+    html.Button("twitter", value="twitter",
+                id="twitter_button", n_clicks=0),
+    html.Button("Google Docs", value="google_docs",
+                id="api_choice"),
+    html.Button("Google Sheets", value="google_sheets",
+                id="api_choice"),
+    html.Div([], id="api_login_form"),
+    html.Div([], id="api_interface"),
+    html.Div(["false"], id="connected", style={"display":"none"}),
+])
 
 
 def twitter_connect(API_key, API_secret_key,
