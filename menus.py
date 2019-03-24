@@ -8,7 +8,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 import dash_table
-import dash_callback_chain as chainvis
 
 from app import app
 from utils import mapping, load_df, cleanup, r, encode_image
@@ -21,7 +20,7 @@ SideBar = [
     html.H2("Sidemenu1"),
     html.Br(),
 
-    html.Button('Show / Hide', id='button_collapse'),
+    html.Button('Show / Hide', id='button_collapse', n_clicks=0),
     html.Div(id='sidebar_collapsible_button', children=[
         html.Ul([
             html.Li('Example list item'),
@@ -31,9 +30,14 @@ SideBar = [
     html.H2("Sidemenu2"),
     html.Button("Ich bin ein button"),
     html.H2("Sidemenu4"),
-    chainvis.CallbackChainVisualizer(id="chain"),
-
 ]
+
+
+debug = False
+if debug:
+    import dash_callback_chain as chainvis
+    app.scripts.config.serve_locally = True
+    SideBar += [chainvis.CallbackChainVisualizer(id="chain")]
 
 
 MainMenu = [

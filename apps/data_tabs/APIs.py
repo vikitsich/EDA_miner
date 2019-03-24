@@ -34,11 +34,37 @@ def twitter_connect(API_key, API_secret_key,
     return api
 
 
+def google_sheets_connect(credentials_file, gspread_key):
+
+    # TODO: Incomplete. Needs frontend interface
+    raise NotImplementedError
+
+
+    scope = ['https://spreadsheets.google.com/feeds',
+             'https://www.googleapis.com/auth/drive']
+
+    # load credentials from file
+    credentials = (ServiceAccountCredentials
+                   .from_json_keyfile_name(credentials_file, scope))
+
+    # create an interface to google
+    gc = gspread.authorize(credentials)
+
+    # connect to a certain spreadsheet, using it's key
+    # e.g. full address: https://docs.google.com/spreadsheets/d/1802UymlFPQE2uvk_T8XI3kX1kWniYOngS6sQSnXoe2U/
+    # remember to either allow the service account's email (see the authorization .json file)
+    # to access the spreadsheet or to allow access to everyone who has a link (or both)
+    spreadsheet = gc.open_by_key(gspread_key)
+    ws = spreadsheet.get_worksheet(0)
+
+    data = ws.get_all_values()
+    data = pd.DataFrame(data[1:], columns=data[0])
+
+    return (gc, spreadsheet, ws, data)
+
+
 def facebook_connect():
     raise NotImplementedError
 
 def google_docs_connect():
-    raise NotImplementedError
-
-def google_sheets_connect():
     raise NotImplementedError

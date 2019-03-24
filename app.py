@@ -8,5 +8,4 @@ app = Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 # Any other configurations for the Dash/Flask server go here
-app.config['suppress_callback_exceptions']=True
-app.scripts.config.serve_locally = True
+app.config['suppress_callback_exceptions'] = True
