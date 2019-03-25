@@ -1,13 +1,26 @@
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
-
+from utils import mapping, load_df, cleanup, r, encode_image
 from server import app
 from utils import load_df, r, create_dropdown
 from apps.view_tabs.Exploration import simple_scatter
 
 import plotly.graph_objs as go
 import peakutils
+
+
+SideBar_KPIs = html.Div(children = [
+    html.Div(children = [
+        html.Img(id="app_logo", src=encode_image("y2d.png")),
+        html.Br(),
+        html.H4('Key Performance Indicators', id = 'kpis'),
+        ]),
+        html.Li('Built Your KPIs'),
+        html.Li('Baseline Modeling'),
+    html.Div(id="SideBar-kpis"),
+    ])
+
 
 
 def KPI_Options(df):

@@ -16,7 +16,7 @@ import peakutils
 layout = html.Div(children=[
     html.Div(children=[
         dcc.Tabs(id="viz_tabs", value='exploration', children=[
-            dcc.Tab(label='Exploratory analyis', value='exploration',
+            dcc.Tab(label='Exploratory analysis', value='exploration',
                     id="exploration"),
             dcc.Tab(label='Key performance indicators', value='kpi',
                     id="kpi"),
