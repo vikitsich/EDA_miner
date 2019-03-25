@@ -7,7 +7,7 @@ import dash_callback_chain as chainvis
 
 from server import app
 from apps import data_view, exploration_view, analyze_view, view_tabs
-from apps.view_tabs import KPIs
+from apps.view_tabs import KPIs, Exploration
 from utils import cleanup, r
 from menus import SideBar, MainMenu
 
@@ -83,7 +83,7 @@ def low_level_tabs_submenus(tab):
         This is implemented only for KPI tab
     """
     if tab == 'exploration':
-        return []
+        return [Exploration.SideBar_Charts]
     if tab == 'kpi':
         return [KPIs.SideBar_KPIs]
     if tab == 'graphs3d':
