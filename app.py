@@ -6,8 +6,8 @@ import dash_table
 import dash_callback_chain as chainvis
 
 from server import app
-from apps import data_view, exploration_view, analyze_view, view_tabs
-from apps.view_tabs import KPIs
+from apps import data_view, exploration_view, analyze_view, exploration_tabs
+from apps.exploration_tabs import KPIs
 from utils import cleanup, r
 from menus import SideBar, MainMenu
 
@@ -73,19 +73,18 @@ def high_level_tabs(tab):
         return '404'
 
 #Input and Output for the Sidebar, for each lower level tab
-@app.callback(Output('sidebar', 'children'),
+@app.callback(Output('low_level_tabs_submenu', 'children'),
               [Input('viz_tabs', 'value')])
-
-def low_level_tabs_submenus(tab):
+def update_sidebar_menus(tab):
     """
-        For the second level of tabs, show different sidebar menu. Choises are: 
+        For the second level of tabs, show different sidebar menu. Choises are:
         Baseline Modelling, Built KPIs.
         This is implemented only for KPI tab
     """
     if tab == 'exploration':
         return []
     if tab == 'kpi':
-        return [KPIs.SideBar_KPIs]
+        return KPIs.SideBar_KPIs
     if tab == 'graphs3d':
         return []
     if tab == 'networks':

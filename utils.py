@@ -68,6 +68,12 @@ def load_df(redisConn, user_id):
     return answer
 
 
+def pretty_print_tweets(api, n_tweets):
+    return [
+        html.H5(str(tweet.text))
+        for tweet in api.GetUserTimeline()[:n_tweets]
+    ]
+
 # TODO: this function needs to be reviewed because
 # it doesn't work correctly on error (i.e. returns a Div).
 def parse_contents(contents, filename, date, user_id):

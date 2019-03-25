@@ -4,9 +4,9 @@ import dash_html_components as html
 
 from server import app
 from utils import load_df, r
-from apps.view_tabs import Exploration, KPIs
-from apps.view_tabs import Exploration_Options, KPI_Options
-from apps.view_tabs import Exploration3D_Options, Network_Options
+from apps.exploration_tabs import Exploration, KPIs
+from apps.exploration_tabs import Exploration_Options, KPI_Options
+from apps.exploration_tabs import Exploration3D_Options, Network_Options
 
 import plotly.graph_objs as go
 import peakutils

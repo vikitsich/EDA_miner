@@ -28,8 +28,10 @@ SideBar = [
         ])
     ]),
     html.H2("Sidemenu2"),
-    html.Button("Ich bin ein button"),
-    html.H2("Sidemenu4"),
+    html.Div(children=[
+        html.Button("ich bin ein button"),
+        html.H3("I will be replaced, per lvl2-tab")
+    ], id="low_level_tabs_submenu")
 ]
 
 
