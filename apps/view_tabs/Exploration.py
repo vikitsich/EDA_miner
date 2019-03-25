@@ -8,6 +8,7 @@ from utils import load_df, r, create_dropdown
 import plotly.graph_objs as go
 
 
+
 def Exploration_Options(df):
 
     options = [
