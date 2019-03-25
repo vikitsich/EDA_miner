@@ -74,7 +74,7 @@ def high_level_tabs(tab):
 
 #Input and Output for the Sidebar, for each lower level tab
 @app.callback(Output('sidebar', 'children'),
-              [Input('visuals-content', 'value')])
+              [Input('viz_tabs', 'value')])
 
 def low_level_tabs_submenus(tab):
     """
