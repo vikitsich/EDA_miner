@@ -13,8 +13,11 @@ import peakutils
 SideBar_KPIs = html.Div(children = [
     html.Div(children = [
         html.Img(id="app_logo", src=encode_image("y2d.png")),
-        html.Button('Key Performance Indecators', id = 'kpis'),
+        html.Br(),
+        html.H4('Key Performance Indicators', id = 'kpis'),
         ]),
+        html.Li('Built Your KPIs'),
+        html.Li('Baseline Modeling'),
     html.Div(id="SideBar-kpis"),
     ])
 

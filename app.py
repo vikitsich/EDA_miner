@@ -83,13 +83,13 @@ def low_level_tabs_submenus(tab):
         This is implemented only for KPI tab
     """
     if tab == 'exploration':
-        return 
+        return []
     if tab == 'kpi':
-        return KPIs.SideBar_KPIs
+        return [KPIs.SideBar_KPIs]
     if tab == 'graphs3d':
-        return
+        return []
     if tab == 'networks':
-        return 
+        return []
 
 
 
