@@ -11,3 +11,6 @@ plotly==2.7.0
 scikit_learn==0.20.3
 python_twitter==3.5
 xgboost==0.82
+gspread==3.1.0
+oauth2client==4.1.3
+
