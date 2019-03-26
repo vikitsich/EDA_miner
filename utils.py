@@ -38,11 +38,13 @@ def create_dropdown(name, options, **kwargs):
 # TODO: Implement user_id correctly:
 # create a Redis entry with all `user_id`s that
 # joined the session and cleanup for each of them
-def cleanup(redisConn, user_id):
+def cleanup(redisConn):
     """
         Deletes everything stored in the redis server.
     """
-    redisConn.delete(f"{user_id}_user_dataframe")
+
+    print("Cleaning up Redis...")
+    redisConn.flushdb()
 
 
 def encode_image(image_path):

@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/KMouratidis/EDA_miner/master/y2d.png" width="250" align="left">
+<img src="https://raw.githubusercontent.com/KMouratidis/EDA_miner/master/images/y2d.png" width="250" align="left">
 
 # EDA_miner
 
@@ -16,15 +16,19 @@ To run with docker you can use our Dockerfile which only requires that you have 
 
 <br>
 
-### Example of the Data View Tab:
+### Example of the Connecting to an API:
 
-![](https://i.imgur.com/FFogpHt.png)
+![](https://raw.githubusercontent.com/KMouratidis/EDA_miner/master/images/screenshots/API_connect.png)
+
+### Example of previewing data:
+
+![](https://raw.githubusercontent.com/KMouratidis/EDA_miner/master/images/screenshots/Preview_Data.png)
 
 ### Example of the Explore & Visualize Tab:
 
-![Interface options 2](https://i.imgur.com/zMMcDwp.png)
+![Interface options 2](https://raw.githubusercontent.com/KMouratidis/EDA_miner/master/images/screenshots/Baseline.png)
 
 ### Example of the Analyze & Predict Tab:
 
-![Interface options 3](https://i.imgur.com/RNqpfo9.png)
+![Interface options 3](https://raw.githubusercontent.com/KMouratidis/EDA_miner/master/images/screenshots/FittingRegression.png)
 
