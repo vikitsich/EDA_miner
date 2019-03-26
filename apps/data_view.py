@@ -45,8 +45,7 @@ def tab_subpages(tab, user_id):
         return Upload_Options
 
     elif tab == "view_data":
-        df = load_df(r, user_id)
-        return View_Options(df)
+        return View_Options(user_id)
 
     elif tab == "api_data":
         return API_Options
