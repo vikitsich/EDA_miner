@@ -11,11 +11,13 @@ from apps.exploration_tabs import KPIs
 from utils import cleanup, r
 from menus import SideBar, MainMenu
 
+from functools import partial
 import pandas as pd
 import base64
 import datetime
 import io
 import atexit
+import signal
 import uuid
 import redis
 
@@ -72,6 +74,7 @@ def high_level_tabs(tab):
     else:
         return '404'
 
+
 #Input and Output for the Sidebar, for each lower level tab
 @app.callback(Output('low_level_tabs_submenu', 'children'),
               [Input('viz_tabs', 'value')])
@@ -114,5 +117,9 @@ if __name__ == "__main__":
     # TODO: Implement user_id correctly:
     # create a Redis entry with all `user_id`s that
     # joined the session and cleanup for each of them
-    atexit.register(cleanup, r, "user_id")
-    app.run_server(debug=True, host= '0.0.0.0')
+
+    try:
+        app.run_server(debug=True, host= '0.0.0.0')
+
+    finally:
+        cleanup(r)
