@@ -12,7 +12,7 @@ Upload_Options = [
             'Drag and Drop or ',
             html.A('Select Files')
         ]), style={
-            'width': '100%',
+            'width': '30%',
             'height': '60px',
             'lineHeight': '60px',
             'borderWidth': '1px',

@@ -1,0 +1,66 @@
+#app_logo {
+    /* height: 150px; */
+    max-width: 185px;
+    display: block;
+}
+
+li {
+    padding-left: 30px;
+}
+
+.Select-control {
+    width: 33%;
+}
+
+button {
+    width: 185px;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: left;
+}
+
+li, li>a {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    color: #000;
+    text-decoration: none;
+    max-width: 140px;
+    /* list-style-type: disc; */
+}
+
+#sidebar {
+    max-width: 185px;
+}
+
+#dark_theme {
+    color: #000;
+}
+
+body {
+    font-family: 'Roboto', sans-serif !important;
+}
+
+#high_level_tabs, .tab {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    vertical-align: middle;
+}
+
+#high_level_tabs {
+    font-size: 22px;
+    max-height: 70px;
+}
+
+.tab {
+    max-height: 60px;
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+}
+
+#visuals-content, #data-content, #model-content {
+    padding-top: 15px;
+}
+
+._dash-undo-redo {
+    display: none;
+}

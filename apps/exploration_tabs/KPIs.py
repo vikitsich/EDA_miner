@@ -11,7 +11,6 @@ import peakutils
 
 
 SideBar_KPIs = [
-        html.Br(),
         html.H4('Key Performance Indicators', id = 'kpis'),
         html.Ul([
             html.Li('Built Your KPIs'),

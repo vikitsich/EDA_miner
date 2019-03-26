@@ -1,6 +1,6 @@
 from dash import Dash
 
-external_stylesheets = []
+external_stylesheets = ["https://use.fontawesome.com/releases/v5.8.1/css/all.css"]
 
 app = Dash(__name__, external_stylesheets=external_stylesheets)
 
@@ -9,3 +9,25 @@ server = app.server
 
 # Any other configurations for the Dash/Flask server go here
 app.config['suppress_callback_exceptions'] = True
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>EDA Miner</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+'''

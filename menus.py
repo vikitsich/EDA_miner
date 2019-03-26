@@ -17,19 +17,35 @@ SideBar = [
 
     html.Img(id="app_logo", src=encode_image("images/y2d.png")),
 
-    html.H2("Sidemenu1"),
     html.Br(),
+    html.H2("Sidemenu1"),
 
-    html.Button('Show / Hide', id='button_collapse', n_clicks=0),
+
+    html.Button('Dark/Light theme', id="dark_theme"),
+    html.Button([
+        html.Span('External links'),
+        html.I("", className="fa fa-caret-down", style={"fontSize":"24px",
+                                                 "verticalAlign":"middle",
+                                                 "paddingLeft":"5px"}),
+    ], id='button_collapse', n_clicks=0),
     html.Div(id='sidebar_collapsible_button', children=[
         html.Ul([
-            html.Li('Example list item'),
-            html.Li('I am padded'),
+            html.Li(html.A([
+                    html.Span("GitHub repo  "),
+                    html.I(className="fab fa-github", style={"fontSize":"28px",
+                                                             "verticalAlign":"bottom",
+                                                             "paddingTop":"5px"}),
+
+                    ], href="https://github.com/KMouratidis/EDA_miner",
+                   target="_blank"),
+                ),
+            html.Li('I am just padded text'),
+
         ])
     ]),
+
     html.H2("Sidemenu2"),
     html.Div(children=[
-        html.Button("ich bin ein button"),
         html.H3("I will be replaced, per lvl2-tab")
     ], id="low_level_tabs_submenu")
 ]
