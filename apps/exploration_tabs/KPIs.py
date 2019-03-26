@@ -14,8 +14,9 @@ SideBar_KPIs = [
         html.Br(),
         html.H4('Key Performance Indicators', id = 'kpis'),
         html.Ul([
-            html.Li('Built Your KPIs'),
-            html.Li('Baseline Modeling'),
+            html.Button('Built Your KPIs', id = 'custom_kpis'),
+            html.Button('Baseline Modeling', id = 'baseline_modelling'),
+            html.Button('Built Your Report', id = 'custom-report')
         ]),
         html.Div(id="SideBar-kpis"),
     ]
@@ -33,15 +34,18 @@ def KPI_Options(df):
 
         *create_dropdown("X variables", options,
                          multi=False, id="xvars"),
-        *create_dropdown("Y variable", options,
-                         multi=True, id="yvars"),
+        *create_dropdown("Choose The Variable For The Baseline Calculation", options,
+                         multi=False, id="yvars"),
+        *create_dropdown("Choose The Variable For The Bar Chart", options,
+                         multi=False, id="secondary_yvars"),
 
         dcc.Graph(id="graph"),
     ])
-
-
-
-def baseline_graph(df, xvars, yvars, **kwargs):
+'''
+@app.callback(Output('SideBar-kpis', 'children'),
+              [Input('SideBar-kpis', 'value')])
+'''
+def baseline_graph(df, xvars, yvars, secondary_yvars, **kwargs):
 
     return [
         go.Scatter(
