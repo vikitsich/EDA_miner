@@ -85,14 +85,22 @@ def update_sidebar_menus(tab):
         This is implemented only for KPI tab
     """
     if tab == 'exploration':
-        return []
+        return [html.H4(f"Tab is {tab}")]
     if tab == 'kpi':
         return KPIs.SideBar_KPIs
     if tab == 'graphs3d':
-        return []
+        return [html.H4(f"Tab is {tab}")]
     if tab == 'networks':
-        return []
+        return [html.H4(f"Tab is {tab}")]
 
+
+@app.callback(Output('low_level_tabs_submenu', 'style'),
+              [Input('high_level_tabs', 'value')])
+def high_level_tabs(tab):
+    if tab != "EDA":
+        return {"display":"none"}
+    else:
+        return {"display":"inline"}
 
 
 ## When the sidebar button is clicked, collapse the div

@@ -45,9 +45,7 @@ SideBar = [
     ]),
 
     html.H2("Sidemenu2"),
-    html.Div(children=[
-        html.H3("I will be replaced, per lvl2-tab")
-    ], id="low_level_tabs_submenu")
+    html.Div(children=[], id="low_level_tabs_submenu")
 ]
 
 
