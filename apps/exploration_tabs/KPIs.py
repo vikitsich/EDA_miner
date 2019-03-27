@@ -55,7 +55,7 @@ def render_variable_choices_kpi(dataset_choice, user_id):
                          multi=False, id="secondary_yvars"),
 
         dcc.Graph(id="graph"),
-    ])
+    ]
 
 
 def hard_cast_to_float(x):
