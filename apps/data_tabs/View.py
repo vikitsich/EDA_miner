@@ -15,29 +15,44 @@ from utils import r, load_df, pretty_print_tweets
 
 def get_available_choices(redisConn, user_id):
 
-    choices = {
+    results = {
         "twitter_api": redisConn.get(f"{user_id}_twitter_api_handle"),
         "gsheets_api": redisConn.get(f"{user_id}_gsheets_api_data"),
         "user_data": redisConn.get(f"{user_id}_user_dataframe"),
     }
-
     options=[
         {'label': k, 'value': k}
-        for k,v in choices.items() if v is not None
+        for k,v in results.items() if v is not None
     ]
-
     if len(options) < 1:
         options = [{'label': "No uploaded data yet", 'value': "no_data"}]
 
-    return dcc.Dropdown(options=options, id="api_data_choice")
+    return options, results
+
+def get_data(api_data_choice, user_id):
+    if api_data_choice == "gsheets_api":
+        df = r.get(f"{user_id}_gsheets_api_data")
+        df = pickle.loads(df)
+
+    # uploaded data
+    elif api_data_choice == "user_data":
+        df =  load_df(r, user_id)
+
+    else:
+        df = None
+
+    return df
 
 
 def View_Options(user_id):
 
+    options, results = get_available_choices(r, user_id)
+    available_choices = dcc.Dropdown(options=options, id="api_data_choice")
+
     return [
         html.Br(),
 
-        get_available_choices(r, user_id),
+        available_choices,
         html.Div(id="table_view", children=[
             dash_table.DataTable(id='table'),
         ]),
@@ -54,15 +69,9 @@ def render_table(api_data_choice, user_id):
 
         return pretty_print_tweets(api, 5)
 
-    elif api_data_choice == "gsheets_api":
-        df = r.get(f"{user_id}_gsheets_api_data")
-        df = pickle.loads(df)
+    df = get_data(api_data_choice, user_id)
 
-    # uploaded data
-    elif api_data_choice == "user_data":
-        df =  load_df(r, user_id)
-
-    else:
+    if df is None:
         return [html.H4("Nothing to display")]
 
 
