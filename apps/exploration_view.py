@@ -7,6 +7,7 @@ from utils import load_df, r
 from apps.exploration_tabs import Exploration, KPIs
 from apps.exploration_tabs import Exploration_Options, KPI_Options
 from apps.exploration_tabs import Exploration3D_Options, Network_Options
+from apps.data_tabs.View import get_available_choices
 
 import plotly.graph_objs as go
 import peakutils
@@ -35,22 +36,27 @@ layout = html.Div(children=[
               [State("user_id", "children")])
 def tab_subpages(tab, user_id):
 
-    df = load_df(r, user_id)
+    options, results = get_available_choices(r, user_id)
 
-    if df is None:
+    #
+    if all(v is None for k,v in results.items()):
         return html.H4("No data currently uploaded")
 
+    # each view should handle on its own how chaning
+    # the dataset it handled
     if tab == 'exploration':
-        return Exploration_Options(df)
+        return Exploration_Options(options, results)
 
     elif tab == 'kpi':
-        return KPI_Options(df)
+        return KPI_Options(options, results)
 
     elif tab == "graphs3d":
-        return Exploration3D_Options(df)
+        return Exploration3D_Options(options, results)
 
     elif tab == "networks":
-        return Network_Options(df)
+        return Network_Options(options, results)
+
+
 
 
 @app.callback(
@@ -60,7 +66,8 @@ def tab_subpages(tab, user_id):
     [State("user_id", "children"),
      State('viz_tabs', 'value')])
 def plot_graph(xvars, yvars, user_id, viz_tab):
-    df = load_df(r, user_id)
+
+
 
     if any(x is None for x in [xvars, yvars, df]):
         return {}

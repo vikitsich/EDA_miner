@@ -8,7 +8,7 @@ from utils import load_df, r, create_dropdown
 import plotly.graph_objs as go
 import peakutils
 
-def Exploration3D_Options(df):
+def Exploration3D_Options(options, results):
 
     options = [
         {'label': col, 'value': col}
