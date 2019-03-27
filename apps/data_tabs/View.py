@@ -47,7 +47,10 @@ def get_data(api_data_choice, user_id):
 def View_Options(user_id):
 
     options, results = get_available_choices(r, user_id)
-    available_choices = dcc.Dropdown(options=options, id="api_data_choice")
+    available_choices = html.Div(dcc.Dropdown(options=options, id="api_data_choice"),
+                                 style={"display":"inline-block",
+                                        "width":"30%"})
+
 
     return [
         html.Br(),

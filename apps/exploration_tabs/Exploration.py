@@ -14,8 +14,14 @@ def Exploration_Options(options, results):
 
     return html.Div(children=[
 
-        *create_dropdown("Available datasets:", options,
-                         multi=False, id="dataset_choice_2d"),
+        html.Div(create_dropdown("Available datasets:", options,
+                                 multi=False, id="dataset_choice_2d"),
+                 style={'width': '30%',
+                        'display': 'inline-block',
+                        'margin':"10px"}
+
+
+        ),
 
         html.Div(id="variable_choices_2d"),
 
@@ -32,13 +38,17 @@ def render_variable_choices_2d(dataset_choice, user_id):
 
     options = [{'label': "No dataset selected yet", 'value': "no_data"}]
     if data is not None:
-        options=[{'label': col, 'value': col} for col in data.columns]
+        options=[{'label': col[:35], 'value': col} for col in data.columns]
 
     return [
-        *create_dropdown("X variable", options,
+        html.Div(create_dropdown("X variable", options,
                          multi=False, id="xvars_2d"),
-        *create_dropdown("Y variable", options,
+                 style={'width': '30%', 'display': 'inline-block',
+                        'margin':"10px"}),
+        html.Div(create_dropdown("Y variable", options,
                          multi=False, id="yvars_2d"),
+                 style={'width': '30%', 'display': 'inline-block',
+                                'margin':"10px"}),
     ]
 
 

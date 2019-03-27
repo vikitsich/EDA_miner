@@ -28,14 +28,17 @@ def KPI_Options(options, results):
 
         html.Div(create_dropdown("Available datasets", options,
                                  multi=False, id="dataset_choice_kpi"),
-                                 style={'width': '35%', 'display': 'inline-block'}
+                                 style={'width': '30%',
+                                        'display': 'inline-block',
+                                        'margin':"10px"}
         ),
 
         # TODO: use this for graph selection
         html.Div(create_dropdown("Choose graph type", options,
                                  multi=False, id="graph_choice_kpi"),
-                                 style={'width': '35%', 'display': 'inline-block',
-                                        'float':"right"}
+                 style={'width': '30%',
+                        'display': 'inline-block',
+                        'margin':"10px"}
         ),
 
         html.Div(id="variable_choices_kpi"),
@@ -52,23 +55,21 @@ def render_variable_choices_kpi(dataset_choice, user_id):
 
     options = [{'label': "No dataset selected yet", 'value': "no_data"}]
     if data is not None:
-        options=[{'label': col, 'value': col} for col in data.columns]
+        options=[{'label': col[:35], 'value': col} for col in data.columns]
 
     return [
-
-    html.Div(create_dropdown("X variables", options,
-                     multi=False, id="xvars_kpi"),
-                     style={'width': '30%', 'display': 'inline-block',
-                            'margin':"10px"}), #notice style variable which wants a dict of CSS
-    html.Div(create_dropdown("Y variable", options,
-                     multi=True, id="yvars_kpi"),
-                     style={'width': '30%', 'display': 'inline-block',
-                            'margin':"10px"}), #notice style variable which wants a dict of CSS
-    html.Div(create_dropdown("Bar Chart variable", options,
-                     multi=False, id="secondary_yvars_kpi"),
-                     style={'width': '30%', 'display': 'inline-block',
-                            'margin':"10px"}),
-
+        html.Div(create_dropdown("X variables", options,
+                         multi=False, id="xvars_kpi"),
+                         style={'width': '30%', 'display': 'inline-block',
+                                'margin':"10px"}),
+        html.Div(create_dropdown("Y variable", options,
+                         multi=True, id="yvars_kpi"),
+                         style={'width': '30%', 'display': 'inline-block',
+                                'margin':"10px"}),
+        html.Div(create_dropdown("Bar Chart variable", options,
+                         multi=False, id="secondary_yvars_kpi"),
+                         style={'width': '30%', 'display': 'inline-block',
+                                'margin':"10px"}),
     ]
 
 

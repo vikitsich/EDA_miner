@@ -49,17 +49,18 @@ SideBar = [
 ]
 
 
-debug = True
-if debug:
-    from dash.dependencies import Input, Output, State
-    import dash_callback_chain as chainvis
-    app.scripts.config.serve_locally = True
-    SideBar += [chainvis.CallbackChainVisualizer(id="chain")]
-
-    # This is to display the callback chains
-    @app.callback( Output('chain', 'dot'), [Input('chain', 'id')] )
-    def show_chain(s):
-        return chainvis.dot_chain(app, ["show_chain"])
+## Currently this is not working.
+# debug = True
+# if debug:
+#     from dash.dependencies import Input, Output, State
+#     import dash_callback_chain as chainvis
+#     app.scripts.config.serve_locally = True
+#     SideBar += [chainvis.CallbackChainVisualizer(id="chain")]
+#
+#     # This is to display the callback chains
+#     @app.callback( Output('chain', 'dot'), [Input('chain', 'id')] )
+#     def show_chain(s):
+#         return chainvis.dot_chain(app, ["show_chain"])
 
 
 MainMenu = [

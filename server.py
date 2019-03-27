@@ -22,7 +22,8 @@ app.index_string = '''
         {%css%}
     </head>
     <body>
-        {%app_entry%}
+        <div class="app0">{%app_entry%}</div>
+
         <footer>
             {%config%}
             {%scripts%}
