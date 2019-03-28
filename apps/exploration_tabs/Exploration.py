@@ -70,7 +70,7 @@ def render_variable_choices_2d(dataset_choice, user_id):
     [State("user_id", "children"),
      State("viz_tabs", "value"), # can probably be removed
      State("dataset_choice_2d", "value")])
-def plot_graph_2d(xvars, yvars, user_id, viz_tab, dataset_choice, graph_choice_exploration):
+def plot_graph_2d(xvars, yvars, graph_choice_exploration, user_id, viz_tab, dataset_choice):
 
     df = get_data(dataset_choice, user_id)
 
@@ -115,7 +115,7 @@ def plot_graph_2d(xvars, yvars, user_id, viz_tab, dataset_choice, graph_choice_e
             go.Heatmap(
                 x=df[xvars],
                 y=df[yvars],
-            ),
+            ),  
         ]
 
     return {
