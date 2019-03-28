@@ -106,16 +106,15 @@ def plot_graph_2d(xvars, yvars, graph_choice_exploration, user_id, viz_tab, data
     elif graph_choice_exploration == 'hist':
         traces = [
             go.Histogram(
-                x=df[xvars],
-                y=df[yvars],
+                x=df[yvars],
             ),
         ]
     elif graph_choice_exploration == 'correl':
         traces = [
-            go.Heatmap(
-                x=df[xvars],
-                y=df[yvars],
-            ),  
+            go.Heatmap(z = [
+                df[xvars],
+                df[yvars],
+                ]),  
         ]
 
     return {
