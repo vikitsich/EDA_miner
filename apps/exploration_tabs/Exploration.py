@@ -62,7 +62,7 @@ def render_variable_choices_2d(dataset_choice, user_id):
                  style={'width': '30%', 'display': 'inline-block',
                         'margin':"10px"}),
         html.Div(create_dropdown("Y variable", options,
-                         multi=False, id="yvars_2d"),
+                         multi=True, id="yvars_2d"),
                  style={'width': '30%', 'display': 'inline-block',
                                 'margin':"10px"}),
     ]
@@ -150,7 +150,7 @@ def plot_graph_2d(xvars, yvars, graph_choice_exploration, user_id, viz_tab, data
             ),
         ]
     elif graph_choice_exploration == 'errorbar':
-        std = df[yvars].std()
+        std = [df.std()[yvars] for y in df[yvars]]
         traces = [
             go.Scatter(
                 x=df[xvars],
@@ -158,8 +158,8 @@ def plot_graph_2d(xvars, yvars, graph_choice_exploration, user_id, viz_tab, data
                 error_y=dict(
                 type='data',
                 symmetric=False,
-                array=[std],
-                arrayminus=[std]),
+                array=std,
+                arrayminus=std),
             ),
         ]
 
