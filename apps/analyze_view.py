@@ -1,29 +1,20 @@
-from dash import Dash
-from dash.dependencies import Input, Output, Event, State
+from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_table
 
-import dash_callback_chain as chainvis
-
-from utils import mapping, load_df, cleanup, r
-from apis import twitter_connect
+from server import app
+from utils import mapping, load_df, r
 
 import pandas as pd
 import base64
 import datetime
-import io
-import atexit
-import uuid
-import redis
 
-from app import app
-
+## TODO: Port internal functionality to apps.analyze_tabs
 
 layout = html.Div(children=[
     html.Div(children=[
 
-        dcc.Tabs(id="modelling_tabs", value='regression', children=[
+        dcc.Tabs(id="analyze_tabs", value="", children=[
             dcc.Tab(label='Regression', value='regression',
                     id="regression"),
             dcc.Tab(label='Classification', value='classification',
@@ -40,9 +31,9 @@ layout = html.Div(children=[
 
 ## Subtabs
 @app.callback(Output('model-content', 'children'),
-              [Input('modelling_tabs', 'value')],
+              [Input('analyze_tabs', 'value')],
               [State("user_id", "children")])
-def analyze_tab_subpages(tab, user_id):
+def tab_subpages(tab, user_id):
     """
         This callback is called when a level two tab
         is selected in the analysis menu. Accordingly,
@@ -77,12 +68,13 @@ def analyze_tab_subpages(tab, user_id):
                 {'label': 'DBSCAN', 'value': 'dbscan'},
                 {'label': 'K-Means Clustering', 'value': 'kmc'},
             ], value='kmc', id="algo_choice")
+
+    elif tab == "econometrics":
+        return [html.H4("Not implement yet..."),]
+
     else:
-        return [
-            html.Div(children=[
-                html.H4("Not implemented yet...")
-            ])
-        ]
+        return [html.H4("Click on a subtab..."),]
+
 
 
     # Unless we have clustering, we should also have
@@ -174,30 +166,4 @@ def fit_model(n_clicks, user_id, xcols, ycols, model_choice):
         except:
             return [html.H4("Your model choice is wrong")]
 
-
-        # TODO: FIX THIS UGLY TRY-EXCEPT JUNK CODE
-        try:
-            answer = [
-                html.H4(f"Fitted a {model_choice} model."),
-                html.H4(f"Intercept: {model.intercept_}"),
-                html.H4(f"Coefficients: {model.coef_}"),
-            ]
-        except AttributeError:
-            try:
-                # Model without coef_
-                answer = [
-                    html.H4(f"Fitted a {model_choice} model."),
-                    html.H4(f"Intercept: {model.intercept_}"),
-                ]
-
-            except AttributeError:
-                # Model without intercept_
-                try:
-                    answer = [
-                        html.H4(f"Fitted a {model_choice} model."),
-                        html.H4(f"Coefficients: {model.coef_}"),
-                    ]
-                except AttributeError:
-                    answer =  [html.H4("Something went wrong"+str(model))]
-
-        return answer
+        return html.H4(f"Model score: {model.score(xcols, ycols)}")

@@ -1,0 +1,4 @@
+from apps.analyze_tabs.Regression import Regression_Options
+from apps.analyze_tabs.Classification import Classification_Options
+from apps.analyze_tabs.Clustering import Clustering_Options
+from apps.analyze_tabs.Econometrics import Econometrics_Options
