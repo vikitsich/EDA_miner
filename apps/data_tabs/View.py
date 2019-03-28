@@ -8,6 +8,7 @@ import dash_bootstrap_components as dbc
 import pandas as pd
 import datetime
 import pickle
+import quandl
 
 from server import app
 from utils import r, load_df, pretty_print_tweets
@@ -22,6 +23,11 @@ def get_available_choices(redisConn, user_id):
         "user_data": redisConn.get(f"{user_id}_user_dataframe"),
         "reddit_api": redisConn.get(f"{user_id}_reddit_handle"),
     }
+
+    quandl_datasets = [x.decode() for x in redisConn.keys(f"{user_id}_quandl_*")]
+    results.update({"_".join(q.split("_")[1:]):q
+                    for q in quandl_datasets})
+
     options=[
         {'label': k, 'value': k}
         for k,v in results.items() if v is not None
@@ -54,15 +60,28 @@ def View_Options(user_id):
                                  style={"display":"inline-block",
                                         "width":"30%"})
 
-
     return [
         html.Br(),
 
         available_choices,
+
+        dcc.Input(id="dataset_name", style={"display":"none"}),
+
         html.Div(id="table_view", children=[
             dash_table.DataTable(id='table'),
         ]),
     ]
+
+
+
+@app.callback(Output("dataset_name", "style"),
+              [Input("api_data_choice", "value")],
+              [State("user_id", "children")])
+def display_subtaset_choices(api_data_choice, user_id,):
+    if api_data_choice == "quandl_api":
+        return {"display":"inline"}
+    else:
+        return {"display":"none"}
 
 
 @app.callback(Output("table_view", "children"),
@@ -85,11 +104,17 @@ def render_table(api_data_choice, user_id):
             html.Button("Gimme dem reddits", id="reddit_submit"),
 
             html.Br(),
+            html.Br(),
             html.Div(id="subreddit_posts"),
         ]
 
+    elif (api_data_choice is not None) and ("quandl" in api_data_choice):
 
-    df = get_data(api_data_choice, user_id)
+        # TODO: this should go to the get_data function
+        df = pickle.loads(r.get(f"{user_id}_{api_data_choice}"))
+
+    else:
+        df = get_data(api_data_choice, user_id)
 
     if df is None:
         return [html.H4("Nothing to display")]
@@ -143,6 +168,7 @@ def render_table(api_data_choice, user_id):
             },
         ),
     ]
+
 
 
 @app.callback(Output("subreddit_posts", "children"),

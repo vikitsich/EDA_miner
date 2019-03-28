@@ -9,6 +9,7 @@ from apps.data_tabs import View_Options
 import twitter
 import praw
 import gspread
+import quandl
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 import pickle
@@ -34,13 +35,14 @@ API_Options = html.Div(children=[
                     id="gsheets_api_tab"),
             dcc.Tab(label='Reddit', value='reddit_api_tab',
                     id="reddit_api_tab"),
+            dcc.Tab(label='Quandl', value='quandl_api_tab',
+                    id="quandl_api_tab"),
         ]),
     ]),
 
     html.Div(id="api_login_form", children=[
         *debuger_layout,
     ]),
-
 
 ])
 
@@ -155,6 +157,38 @@ def api_connect(api_choice, n_clicks, user_id,
                 *debuger_layout,
             ]
 
+    elif api_choice == "quandl_api_tab":
+
+        if n_clicks is not None and n_clicks >= 1:
+
+            if not connected:
+
+                # Does't exactly need an authentication function
+                quandl.ApiConfig.api_key = input1
+
+                r.set(f"{user_id}_quandl", "true")
+
+                r.set(f"{user_id}_quandl_{input2}", pickle.dumps(quandl.get(input2)))
+
+                # TODO: This needs revisiting for allowing user to add
+                # multiple datasets
+                return [
+                    html.H4("Successfully got data from the Quandl API."),
+                    html.Br(),
+                    *debuger_layout,
+                ]
+
+        elif not connected:
+            return quandl_layout
+
+        else:
+            return [
+                html.H4("Connected previously"),
+                *debuger_layout,
+            ]
+
+
+
     else:
         return [
             html.H4(f"{api_choice} not yet implemented"),
@@ -204,9 +238,22 @@ reddit_layout = [
                 style={"display":"inline"})
 ]
 
+quandl_layout  = [
+    html.H5("Quandl key"),
+    dcc.Input(id="input1", type="text"),
+    html.H5("Quandl tag"),
+    dcc.Input(id="input2", type="text"),
+
+    dcc.Input(id="input3", type="text", style={"display":"none"}),
+    dcc.Input(id="input4", type="text", style={"display":"none"}),
+
+    html.Button("Connect!", id="connect_button",
+                style={"display":"inline"})
+]
+
+
 
 def reddit_connect(client_id, client_secret):
-
     reddit = praw.Reddit(client_id=client_id,
                      client_secret=client_secret,
                      user_agent='EDA miner')
