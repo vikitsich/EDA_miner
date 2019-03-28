@@ -125,6 +125,7 @@ def plot_graph_kpi(xvars, yvars, secondary_yvars,
                    },
                    name=yvar
             ) for yvar in yvars] + [
+        # Bar plot for the second variable
         go.Bar(
             x=df[xvars],
             y=df[secondary_yvars].apply(hard_cast_to_float),
