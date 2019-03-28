@@ -3,6 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 import dash_table
+import dash_bootstrap_components as dbc
 
 import pandas as pd
 import datetime
@@ -19,6 +20,7 @@ def get_available_choices(redisConn, user_id):
         "twitter_api": redisConn.get(f"{user_id}_twitter_api_handle"),
         "gsheets_api": redisConn.get(f"{user_id}_gsheets_api_data"),
         "user_data": redisConn.get(f"{user_id}_user_dataframe"),
+        "reddit_api": redisConn.get(f"{user_id}_reddit_handle"),
     }
     options=[
         {'label': k, 'value': k}
@@ -47,7 +49,8 @@ def get_data(api_data_choice, user_id):
 def View_Options(user_id):
 
     options, results = get_available_choices(r, user_id)
-    available_choices = html.Div(dcc.Dropdown(options=options, id="api_data_choice"),
+    available_choices = html.Div(dcc.Dropdown(options=options,
+                                              id="api_data_choice"),
                                  style={"display":"inline-block",
                                         "width":"30%"})
 
@@ -71,6 +74,20 @@ def render_table(api_data_choice, user_id):
         api = r.get(f"{user_id}_twitter_api_handle")
 
         return pretty_print_tweets(api, 5)
+
+    elif api_data_choice == "reddit_api":
+
+        api = r.get(f"{user_id}_reddit_handle")
+
+        return [
+            html.H4("Write the name of a subreddit:"),
+            dcc.Input(id="subreddit_choice", type="text", value="",),
+            html.Button("Gimme dem reddits", id="reddit_submit"),
+
+            html.Br(),
+            html.Div(id="subreddit_posts"),
+        ]
+
 
     df = get_data(api_data_choice, user_id)
 
@@ -126,3 +143,42 @@ def render_table(api_data_choice, user_id):
             },
         ),
     ]
+
+
+@app.callback(Output("subreddit_posts", "children"),
+              [Input("reddit_submit", "n_clicks")],
+              [State("subreddit_choice", "value"),
+               State("user_id", "children")])
+def display_reddit_posts(n_clicks, subreddit_choice, user_id):
+
+    if n_clicks is not None and n_clicks >=1:
+
+        if subreddit_choice is not None:
+
+            api = pickle.loads(r.get(f"{user_id}_reddit_handle"))
+            subreddit = api.subreddit(subreddit_choice)
+
+            posts = [
+                html.Div([
+                    dbc.Card([
+                        dbc.CardHeader([
+                            html.H4(post.title),
+                            html.A("view at reddit", href=post.permalink),
+                        ]),
+                        dbc.CardBody([
+                            dbc.CardTitle(f"Written by {post.author.name}, score: {post.score}"),
+                            dbc.CardText(dcc.Markdown(post.selftext),),
+                        ]),
+                    ]),
+                    html.Br(),
+                ]) for post in subreddit.hot(limit=5)
+            ]
+
+            return posts
+
+        else:
+            return [html.H4("No subreddit choice")]
+
+    else:
+
+        return [html.H4("No reddit data to display.")]
