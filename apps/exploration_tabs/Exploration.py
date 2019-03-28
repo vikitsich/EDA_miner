@@ -5,6 +5,8 @@ import dash_html_components as html
 from server import app
 from utils import load_df, r, create_dropdown
 from apps.data_tabs.View import get_data
+import numpy as np
+import pandas as pd
 
 import plotly.graph_objs as go
 
@@ -26,7 +28,12 @@ def Exploration_Options(options,results):
                 {'label': 'Line Graph', 'value': 'line'},
                 {'label': 'Histogram Graph', 'value': 'hist'},
                 {'label': 'Correlation Graph', 'value': 'correl'},
-                {'label': 'Scatter Plot', 'value': 'scatter'}
+                {'label': 'Scatter Plot', 'value': 'scatter'},
+                {'label': 'Bubble Graph', 'value': 'bubble'},
+                {'label': 'Pie Chart', 'value': 'pie'},
+                {'label': 'Filled Area Graph', 'value': 'filledarea'},
+                {'label': 'Error Bar Graph', 'value': 'errorbar'},
+                {'label': '2D Density Plot', 'value': '2ddensity'}
             ], multi=False, id="graph_choice_exploration"),
                style={'width': '30%',
                         'display': 'inline-block',
@@ -106,16 +113,77 @@ def plot_graph_2d(xvars, yvars, graph_choice_exploration, user_id, viz_tab, data
     elif graph_choice_exploration == 'hist':
         traces = [
             go.Histogram(
-                x=df[xvars],
-                y=df[yvars],
+                x=df[yvars],
             ),
         ]
     elif graph_choice_exploration == 'correl':
         traces = [
-            go.Heatmap(
+            go.Heatmap(z = [
+                df[xvars],
+                df[yvars],
+                ]),  
+        ]
+    elif graph_choice_exploration == 'bubble':
+        size = [20, 40, 60, 80, 100, 80, 60, 40, 20, 40]
+        traces = [
+            go.Scatter(
                 x=df[xvars],
                 y=df[yvars],
-            ),  
+                mode='markers',
+                marker=dict(
+                    size=size,
+                    sizemode='area',
+                    sizeref=2.*max(size)/(40.**2),
+                    sizemin=4
+                )
+            ),
+        ]
+    
+    elif graph_choice_exploration == 'pie':
+        traces = [go.Pie(labels = df[xvars], values = df[yvars])]
+
+    elif graph_choice_exploration == 'filledarea':
+        traces = [
+            go.Scatter(
+                x=df[xvars],
+                y=df[yvars],
+                fill='tonexty',
+            ),
+        ]
+    elif graph_choice_exploration == 'errorbar':
+        std = [df.std()[yvars] for y in df[yvars]]
+        traces = [
+            go.Scatter(
+                x=df[xvars],
+                y=df[yvars],
+                error_y=dict(
+                type='data',
+                symmetric=False,
+                array=std,
+                arrayminus=std),
+            ),
+        ]
+    elif graph_choice_exploration == '2ddensity':
+        traces = [
+            go.Scatter(
+                x=df[xvars],
+                y=df[yvars],
+                mode='markers',
+                marker=dict(
+                    color = 'rgb(102,0,0)',
+                    size=2,
+                    opacity = 0.2
+                )
+            ),
+        ] + [ go.Histogram2dContour(
+                x = df[xvars],
+                y = df[yvars],
+                name = 'density',
+                ncontours=20,
+                colorscale='Hot',
+                reversescale=True,
+                showscale=False
+            ),            
         ]
 
     return {
