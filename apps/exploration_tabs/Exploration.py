@@ -32,7 +32,8 @@ def Exploration_Options(options,results):
                 {'label': 'Bubble Graph', 'value': 'bubble'},
                 {'label': 'Pie Chart', 'value': 'pie'},
                 {'label': 'Filled Area Graph', 'value': 'filledarea'},
-                {'label': 'Error Bar Graph', 'value': 'errorbar'}
+                {'label': 'Error Bar Graph', 'value': 'errorbar'},
+                {'label': '2D Density Plot', 'value': '2ddensity'}
             ], multi=False, id="graph_choice_exploration"),
                style={'width': '30%',
                         'display': 'inline-block',
@@ -62,7 +63,7 @@ def render_variable_choices_2d(dataset_choice, user_id):
                  style={'width': '30%', 'display': 'inline-block',
                         'margin':"10px"}),
         html.Div(create_dropdown("Y variable", options,
-                         multi=True, id="yvars_2d"),
+                         multi=False, id="yvars_2d"),
                  style={'width': '30%', 'display': 'inline-block',
                                 'margin':"10px"}),
     ]
@@ -161,6 +162,28 @@ def plot_graph_2d(xvars, yvars, graph_choice_exploration, user_id, viz_tab, data
                 array=std,
                 arrayminus=std),
             ),
+        ]
+    elif graph_choice_exploration == '2ddensity':
+        traces = [
+            go.Scatter(
+                x=df[xvars],
+                y=df[yvars],
+                mode='markers',
+                marker=dict(
+                    color = 'rgb(102,0,0)',
+                    size=2,
+                    opacity = 0.2
+                )
+            ),
+        ] + [ go.Histogram2dContour(
+                x = df[xvars],
+                y = df[yvars],
+                name = 'density',
+                ncontours=20,
+                colorscale='Hot',
+                reversescale=True,
+                showscale=False
+            ),            
         ]
 
     return {
