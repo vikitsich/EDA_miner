@@ -9,8 +9,7 @@ from apps.data_tabs.View import get_data
 import plotly.graph_objs as go
 
 
-
-def Exploration_Options(options, results):
+def Exploration_Options(options,results):
 
     return html.Div(children=[
 
@@ -19,8 +18,19 @@ def Exploration_Options(options, results):
                  style={'width': '30%',
                         'display': 'inline-block',
                         'margin':"10px"}
+        ),
 
-
+        # TODO: use this for graph selection
+        html.Div(create_dropdown("Choose graph type", 
+                options = [
+                {'label': 'Line Graph', 'value': 'line'},
+                {'label': 'Histogram Graph', 'value': 'hist'},
+                {'label': 'Correlation Graph', 'value': 'correl'},
+                {'label': 'Scatter Plot', 'value': 'scatter'}
+            ], multi=False, id="graph_choice_exploration"),
+               style={'width': '30%',
+                        'display': 'inline-block',
+                        'margin':"10px"}
         ),
 
         html.Div(id="variable_choices_2d"),
@@ -55,30 +65,58 @@ def render_variable_choices_2d(dataset_choice, user_id):
 @app.callback(
     Output("graph_2d", "figure"),
     [Input("xvars_2d", "value"),
-     Input("yvars_2d", "value")],
+     Input("yvars_2d", "value"),
+     Input('graph_choice_exploration', "value")],
     [State("user_id", "children"),
-     State('viz_tabs', 'value'), # can probably be removed
-     State('dataset_choice_2d', 'value')])
-def plot_graph_2d(xvars, yvars, user_id, viz_tab, dataset_choice):
+     State("viz_tabs", "value"), # can probably be removed
+     State("dataset_choice_2d", "value")])
+def plot_graph_2d(xvars, yvars, user_id, viz_tab, dataset_choice, graph_choice_exploration):
 
     df = get_data(dataset_choice, user_id)
 
     if any(x is None for x in [xvars, yvars, df]):
         return {}
-
-    # simple scatter
-    traces = [
-        go.Scatter(
-            x=df[xvars],
-            y=df[yvars],
-            mode='markers',
-            opacity=0.7,
-            marker={
-                'size': 15,
-                'line': {'width': 0.5, 'color': 'white'}
-            },
-        ),
-    ]
+    if graph_choice_exploration == 'scatter':
+        # simple scatter
+        traces = [
+            go.Scatter(
+                x=df[xvars],
+                y=df[yvars],
+                mode='markers',
+                opacity=0.7,
+                marker={
+                    'size': 15,
+                    'line': {'width': 0.5, 'color': 'white'}
+                },
+            ),
+        ]
+    elif graph_choice_exploration == 'line':
+        traces = [
+            go.Scatter(
+                x=df[xvars],
+                y=df[yvars],
+                mode='line',
+                opacity=0.7,
+                marker={
+                    'size': 15,
+                    'line': {'width': 0.5, 'color': 'white'}
+                },
+            ),
+        ]
+    elif graph_choice_exploration == 'hist':
+        traces = [
+            go.Histogram(
+                x=df[xvars],
+                y=df[yvars],
+            ),
+        ]
+    elif graph_choice_exploration == 'correl':
+        traces = [
+            go.Heatmap(
+                x=df[xvars],
+                y=df[yvars],
+            ),
+        ]
 
     return {
         'data': traces,
