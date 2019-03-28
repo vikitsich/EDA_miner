@@ -3,8 +3,6 @@
 __pycache__
 __pycache__/*
 *pycache*
-*.xlsx
-*.csv
 *.json
 *.pkl
 *.ipynb
@@ -20,4 +18,4 @@ db.*
 *.db
 *.rdb
 *ropeproject*
-*.rdb
+*node_information.csv

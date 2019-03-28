@@ -40,6 +40,7 @@ def serve_layout():
         # one can keep his data in disk. This may need changing to
         # either using tokens or to some login form
         # TAKE A LOOK AT dcc.Store
+        html.H2(session_id, id="session_id", style={"display":"none"}),
         html.H2(session_id, id="user_id", style={"display":"none"}),
 
         # Sidebar / menu
@@ -48,11 +49,66 @@ def serve_layout():
         # main Div
         html.Div(children=MainMenu, className="nine columns", id="mainmenu"),
 
-    ], className="row")
+    ], className="row", style={"display": "none"}, id="main_page")
 
 
-app.layout = serve_layout
+landing_page = html.Div([
+        html.H2("Welcome to our app! :D"),
+        html.H4("Would you like to login?"),
+        dcc.RadioItems(
+            options=[
+                {'label': 'Yes, log me in', 'value': 'yes'},
+                {'label': 'No, leave me alone', 'value': 'no'}
+            ],
+            value='yes',
+            labelStyle={'display': 'inline-block'},
+            id="login_choice",
+        ),
+        html.Div(id="landing_page_form", children=[
+            html.Div(id="login_form", children=[
+                dcc.Input("username", type="text", value=""),
+            ], style={"display":"none"}),
 
+        ]),
+        html.Div(html.Button("Submit", id="submit_login_choice")),
+    ], id="landing_page")
+
+
+app.layout = html.Div([
+    landing_page,
+    serve_layout(),
+])
+
+
+# Show or display login form
+@app.callback(Output("login_form", "style"),
+              [Input("login_choice", "value")])
+def show_login_input(value):
+    if value == "yes":
+        return {"display":"inline"}
+    else:
+        return {"display":"none"}
+
+
+# Return appropriate layout after submit page
+@app.callback([Output("main_page", "style"),
+               Output("landing_page", "style"),
+               Output("user_id", "children")],
+              [Input("submit_login_choice", "n_clicks")],
+              [State("session_id", "children"),
+               State("username", "value")])
+def go_to_main_page(n_clicks, session_id, username):
+    if n_clicks is not None and n_clicks >= 1:
+        outputs = [{"display":"inline"}, {"display":"none"}]
+    else:
+        outputs = [{"display":"none"}, {"display":"inline"}]
+
+    if username is not None and len(username) >= 3:
+        outputs += [username]
+    else:
+        outputs += [session_id]
+
+    return outputs
 
 
 # Input and Output defined in MainMenu
@@ -111,13 +167,6 @@ def button_toggle(n_clicks):
         return {'display': 'none'}
     else:
         return {'display': 'block'}
-
-## Only exists due to a known bug in dash
-@app.callback(Output("user_id", "children"),
-              [Input("table", "data")],
-              [State("user_id", "children")])
-def debug_func(data, user_id):
-    return user_id
 
 
 

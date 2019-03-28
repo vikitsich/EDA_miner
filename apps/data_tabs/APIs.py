@@ -7,7 +7,9 @@ from utils import r, pretty_print_tweets
 from apps.data_tabs import View_Options
 
 import twitter
+import praw
 import gspread
+import quandl
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
 import pickle
@@ -31,15 +33,16 @@ API_Options = html.Div(children=[
                     id="twitter_api_tab"),
             dcc.Tab(label='Google Sheets', value='gsheets_api_tab',
                     id="gsheets_api_tab"),
-            dcc.Tab(label='Google Docs', value='gdocs_api_tab',
-                    id="gdocs_api_tab"),
+            dcc.Tab(label='Reddit', value='reddit_api_tab',
+                    id="reddit_api_tab"),
+            dcc.Tab(label='Quandl', value='quandl_api_tab',
+                    id="quandl_api_tab"),
         ]),
     ]),
 
     html.Div(id="api_login_form", children=[
         *debuger_layout,
     ]),
-
 
 ])
 
@@ -111,8 +114,6 @@ def api_connect(api_choice, n_clicks, user_id,
 
                 r.set(f"{user_id}_{api_choice}", "true")
 
-                # r.set(f"{user_id}_redis_handle", pickle.dumps(gc))
-
                 # userid_data_gsheets
                 r.set(f"{user_id}_gsheets_api_data", pickle.dumps(data))
 
@@ -130,6 +131,63 @@ def api_connect(api_choice, n_clicks, user_id,
                 html.H4("Connected previously"),
                 *debuger_layout,
             ]
+
+    elif api_choice == "reddit_api_tab":
+
+        if n_clicks is not None and n_clicks >= 1:
+
+            if not connected:
+                reddit_api = reddit_connect(input1, input2)
+
+                r.set(f"{user_id}_{api_choice}", "true")
+                r.set(f"{user_id}_reddit_handle", pickle.dumps(reddit_api))
+
+                return [
+                    html.H4("Successfully connected to the Reddit API."),
+                    html.Br(),
+                    *debuger_layout,
+                ]
+
+        elif not connected:
+            return reddit_layout
+
+        else:
+            return [
+                html.H4("Connected previously"),
+                *debuger_layout,
+            ]
+
+    elif api_choice == "quandl_api_tab":
+
+        if n_clicks is not None and n_clicks >= 1:
+
+            if not connected:
+
+                # Does't exactly need an authentication function
+                quandl.ApiConfig.api_key = input1
+
+                r.set(f"{user_id}_quandl", "true")
+
+                r.set(f"{user_id}_quandl_{input2}", pickle.dumps(quandl.get(input2)))
+
+                # TODO: This needs revisiting for allowing user to add
+                # multiple datasets
+                return [
+                    html.H4("Successfully got data from the Quandl API."),
+                    html.Br(),
+                    *debuger_layout,
+                ]
+
+        elif not connected:
+            return quandl_layout
+
+        else:
+            return [
+                html.H4("Connected previously"),
+                *debuger_layout,
+            ]
+
+
 
     else:
         return [
@@ -167,6 +225,40 @@ gsheets_layout = [
                 style={"display":"inline"})
 ]
 
+reddit_layout = [
+    html.H5("Client id"),
+    dcc.Input(id="input1", type="text"),
+    html.H5("Client secret"),
+    dcc.Input(id="input2", type="text"),
+
+    dcc.Input(id="input3", type="text", style={"display":"none"}),
+    dcc.Input(id="input4", type="text", style={"display":"none"}),
+
+    html.Button("Connect!", id="connect_button",
+                style={"display":"inline"})
+]
+
+quandl_layout  = [
+    html.H5("Quandl key"),
+    dcc.Input(id="input1", type="text"),
+    html.H5("Quandl tag"),
+    dcc.Input(id="input2", type="text"),
+
+    dcc.Input(id="input3", type="text", style={"display":"none"}),
+    dcc.Input(id="input4", type="text", style={"display":"none"}),
+
+    html.Button("Connect!", id="connect_button",
+                style={"display":"inline"})
+]
+
+
+
+def reddit_connect(client_id, client_secret):
+    reddit = praw.Reddit(client_id=client_id,
+                     client_secret=client_secret,
+                     user_agent='EDA miner')
+
+    return reddit
 
 
 def twitter_connect(API_key, API_secret_key,
