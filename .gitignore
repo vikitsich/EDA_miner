@@ -16,5 +16,6 @@ __pycache__/*
 
 db.*
 *.db
+*.rdb
 *ropeproject*
 *node_information.csv
