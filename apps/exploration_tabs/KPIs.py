@@ -88,10 +88,9 @@ def hard_cast_to_float(x):
      Input("yvars_kpi", "value"),
      Input("secondary_yvars_kpi", "value")],
     [State("user_id", "children"),
-     State('viz_tabs', 'value'), # can probably be removed
      State('dataset_choice_kpi', 'value')])
 def plot_graph_kpi(xvars, yvars, secondary_yvars,
-                   user_id, viz_tab, dataset_choice):
+                   user_id, dataset_choice):
 
     df = get_data(dataset_choice, user_id)
 

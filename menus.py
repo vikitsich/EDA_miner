@@ -15,7 +15,7 @@ from utils import mapping, load_df, cleanup, r, encode_image
 
 SideBar = [
 
-    html.Img(id="app_logo", src=encode_image("images/y2d.png")),
+    html.Img(id="app_logo", src=encode_image("assets/images/y2d.png")),
 
     html.Br(),
     html.H2("Sidemenu1"),

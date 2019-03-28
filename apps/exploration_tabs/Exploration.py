@@ -23,7 +23,7 @@ def Exploration_Options(options,results):
         ),
 
         # TODO: use this for graph selection
-        html.Div(create_dropdown("Choose graph type", 
+        html.Div(create_dropdown("Choose graph type",
                 options = [
                 {'label': 'Line Graph', 'value': 'line'},
                 {'label': 'Histogram Graph', 'value': 'hist'},
@@ -75,14 +75,17 @@ def render_variable_choices_2d(dataset_choice, user_id):
      Input("yvars_2d", "value"),
      Input('graph_choice_exploration', "value")],
     [State("user_id", "children"),
-     State("viz_tabs", "value"), # can probably be removed
      State("dataset_choice_2d", "value")])
-def plot_graph_2d(xvars, yvars, graph_choice_exploration, user_id, viz_tab, dataset_choice):
+def plot_graph_2d(xvars, yvars, graph_choice_exploration,
+                  user_id, dataset_choice):
 
     df = get_data(dataset_choice, user_id)
 
-    if any(x is None for x in [xvars, yvars, df]):
+    if any(x is None for x in [xvars, yvars, df, dataset_choice,
+                               graph_choice_exploration, ]):
         return {}
+
+
     if graph_choice_exploration == 'scatter':
         # simple scatter
         traces = [
@@ -121,7 +124,7 @@ def plot_graph_2d(xvars, yvars, graph_choice_exploration, user_id, viz_tab, data
             go.Heatmap(z = [
                 df[xvars],
                 df[yvars],
-                ]),  
+                ]),
         ]
     elif graph_choice_exploration == 'bubble':
         size = [20, 40, 60, 80, 100, 80, 60, 40, 20, 40]
@@ -138,7 +141,7 @@ def plot_graph_2d(xvars, yvars, graph_choice_exploration, user_id, viz_tab, data
                 )
             ),
         ]
-    
+
     elif graph_choice_exploration == 'pie':
         traces = [go.Pie(labels = df[xvars], values = df[yvars])]
 
@@ -183,8 +186,12 @@ def plot_graph_2d(xvars, yvars, graph_choice_exploration, user_id, viz_tab, data
                 colorscale='Hot',
                 reversescale=True,
                 showscale=False
-            ),            
+            ),
         ]
+
+    else:
+        traces = []
+
 
     return {
         'data': traces,

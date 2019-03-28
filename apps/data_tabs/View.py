@@ -46,6 +46,9 @@ def get_data(api_data_choice, user_id):
     elif api_data_choice == "user_data":
         df =  load_df(r, user_id)
 
+    elif (api_data_choice is not None) and ("quandl" in api_data_choice):
+        df = pickle.loads(r.get(f"{user_id}_{api_data_choice}"))
+
     else:
         df = None
 
@@ -110,8 +113,7 @@ def render_table(api_data_choice, user_id):
 
     elif (api_data_choice is not None) and ("quandl" in api_data_choice):
 
-        # TODO: this should go to the get_data function
-        df = pickle.loads(r.get(f"{user_id}_{api_data_choice}"))
+        df = get_data(api_data_choice, user_id)
 
     else:
         df = get_data(api_data_choice, user_id)

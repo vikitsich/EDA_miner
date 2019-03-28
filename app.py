@@ -61,12 +61,14 @@ landing_page = html.Div([
                 {'label': 'No, leave me alone', 'value': 'no'}
             ],
             value='yes',
-            labelStyle={'display': 'inline-block'},
+            labelStyle={'display': 'inline-block',
+                        "padding":"10px"},
             id="login_choice",
         ),
         html.Div(id="landing_page_form", children=[
             html.Div(id="login_form", children=[
-                dcc.Input("username", type="text", value=""),
+                dcc.Input("username", type="text", value="",
+                          placeholder="username"),
             ], style={"display":"none"}),
 
         ]),

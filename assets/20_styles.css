@@ -32,6 +32,10 @@ li>a {
     max-width: 185px;
 }
 
+#sidebar, #main_page, #mainmenu {
+    padding-top: 10px;
+}
+
 #dark_theme {
     color: #000;
 }
@@ -76,12 +80,12 @@ body {
 #submit_login_choice {
     text-align: center;
     font-size: 16px;
-
+    color: white;
 }
 
 #landing_page
 {
-	background-image: url('https://mdn.mozillademos.org/files/11991/startransparent.gif');
+	background-image: url("images/graph_abs.jpg");
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
@@ -91,4 +95,5 @@ body {
     background-color: transparent;
     font-weight: bold;
     padding-top: 200px;
+    color: white;
 }
