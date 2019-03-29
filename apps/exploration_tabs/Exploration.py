@@ -5,9 +5,10 @@ import dash_html_components as html
 from server import app
 from utils import load_df, r, create_dropdown
 from apps.data_tabs.View import get_data
+from apps.exploration_tabs.graph_functions import graphs2d
+
 import numpy as np
 import pandas as pd
-
 import plotly.graph_objs as go
 
 
@@ -15,6 +16,7 @@ def Exploration_Options(options,results):
 
     return html.Div(children=[
 
+        # Choose a dataset
         html.Div(create_dropdown("Available datasets:", options,
                                  multi=False, id="dataset_choice_2d"),
                  style={'width': '30%',
@@ -22,172 +24,138 @@ def Exploration_Options(options,results):
                         'margin':"10px"}
         ),
 
-        # TODO: use this for graph selection
+        # Choose a graph
         html.Div(create_dropdown("Choose graph type",
                 options = [
-                {'label': 'Line Graph', 'value': 'line'},
-                {'label': 'Histogram Graph', 'value': 'hist'},
-                {'label': 'Correlation Graph', 'value': 'correl'},
-                {'label': 'Scatter Plot', 'value': 'scatter'},
-                {'label': 'Bubble Graph', 'value': 'bubble'},
-                {'label': 'Pie Chart', 'value': 'pie'},
-                {'label': 'Filled Area Graph', 'value': 'filledarea'},
-                {'label': 'Error Bar Graph', 'value': 'errorbar'},
-                {'label': '2D Density Plot', 'value': '2ddensity'}
-            ], multi=False, id="graph_choice_exploration"),
-               style={'width': '30%',
-                        'display': 'inline-block',
-                        'margin':"10px"}
+                    {'label': 'Line Graph', 'value': 'line_chart'},
+                    {'label': 'Scatter Plot', 'value': 'scatterplot'},
+                    {'label': 'Histogram Graph', 'value': 'histogram'},
+                    {'label': 'Correlation Graph', 'value': 'heatmap'},
+                    {'label': 'Bubble Graph', 'value': 'bubble_chart'},
+                    {'label': 'Pie Chart', 'value': 'pie'},
+                    {'label': 'Filled Area Graph', 'value': 'filledarea'},
+                    {'label': 'Error Bar Graph', 'value': 'errorbar'},
+                    {'label': '2D Density Plot', 'value': 'density2d'}
+                ], multi=False, id="graph_choice_exploration"),
+                   style={'width': '30%',
+                            'display': 'inline-block',
+                            'margin':"10px"}
         ),
 
+        ## Two empty divs to be filled by callbacks
+        # Available buttons and choices for plotting
         html.Div(id="variable_choices_2d"),
-
+        # The graph itself
         dcc.Graph(id="graph_2d"),
     ])
 
 
 @app.callback(Output("variable_choices_2d", "children"),
-              [Input("dataset_choice_2d", "value")],
+              [Input("dataset_choice_2d", "value"),
+               Input("graph_choice_exploration", "value")],
               [State("user_id", "children")])
-def render_variable_choices_2d(dataset_choice, user_id):
+def render_variable_choices_2d(dataset_choice, graph_choice_exploration,
+                               user_id):
+    """
+        This callback is used in order to create a menu of dcc components
+        for the user to choose for altering plotting options.
+    """
 
-    data = get_data(dataset_choice, user_id)
+    df = get_data(dataset_choice, user_id)
 
+    # Make sure all variables have a value before returning choices
+    if any(x is None for x in [df, dataset_choice,
+                               graph_choice_exploration]):
+        return [html.H4("Select both dataset and graph type.")]
+
+
+    # TODO: This probably is not needed anymore, the check is performed above
     options = [{'label': "No dataset selected yet", 'value': "no_data"}]
-    if data is not None:
-        options=[{'label': col[:35], 'value': col} for col in data.columns]
+    if df is not None:
+        options=[{'label': col[:35], 'value': col} for col in df.columns]
 
-    return [
+
+    needs_yvar, allows_multi = graphs2d.graph_configs[graph_choice_exploration]
+
+    # TODO: Handle multiple yvars in appropriate graphs
+    # till then, set this to false
+    allows_multi = False
+
+    layout = [
         html.Div(create_dropdown("X variable", options,
-                         multi=False, id="xvars_2d"),
-                 style={'width': '30%', 'display': 'inline-block',
-                        'margin':"10px"}),
+                                       multi=False, id="xvars_2d"),
+                       style={'width': '30%', 'display': 'inline-block',
+                              'margin':"10px"}),
+
+        # This still needs to be returned for other callbacks to work,
+        # but will be hidden if we don't need Y variables
         html.Div(create_dropdown("Y variable", options,
-                         multi=False, id="yvars_2d"),
-                 style={'width': '30%', 'display': 'inline-block',
-                                'margin':"10px"}),
+                                 multi=allows_multi,
+                                 id="yvars_2d"),
+                 style={'width': '30%',
+                        'display': 'inline-block' if needs_yvar else "none",
+                        'margin':"10px"})
     ]
+
+    return layout
 
 
 @app.callback(
     Output("graph_2d", "figure"),
     [Input("xvars_2d", "value"),
-     Input("yvars_2d", "value"),
-     Input('graph_choice_exploration', "value")],
-    [State("user_id", "children"),
+     Input("yvars_2d", "value")],
+    [State('graph_choice_exploration', "value"),
+     State("user_id", "children"),
      State("dataset_choice_2d", "value")])
 def plot_graph_2d(xvars, yvars, graph_choice_exploration,
                   user_id, dataset_choice):
+    """
+        This callback takes all available user choices and, if all
+        are present, it returns the appropriate plot.
+    """
 
     df = get_data(dataset_choice, user_id)
 
-    if any(x is None for x in [xvars, yvars, df, dataset_choice,
-                               graph_choice_exploration, ]):
+
+    ## Make sure all variables have a value before plotting
+    ## To test the right variables, we need to see if yvars is needed
+    needs_yvar, allows_multi = graphs2d.graph_configs[graph_choice_exploration]
+
+    test_conditions = [xvars, df, dataset_choice, graph_choice_exploration]
+    if needs_yvar:
+        test_conditions.append(yvars)
+
+    if any(x is None for x in test_conditions):
         return {}
 
 
-    if graph_choice_exploration == 'scatter':
-        # simple scatter
-        traces = [
-            go.Scatter(
-                x=df[xvars],
-                y=df[yvars],
-                mode='markers',
-                opacity=0.7,
-                marker={
-                    'size': 15,
-                    'line': {'width': 0.5, 'color': 'white'}
-                },
-            ),
-        ]
-    elif graph_choice_exploration == 'line':
-        traces = [
-            go.Scatter(
-                x=df[xvars],
-                y=df[yvars],
-                mode='line',
-                opacity=0.7,
-                marker={
-                    'size': 15,
-                    'line': {'width': 0.5, 'color': 'white'}
-                },
-            ),
-        ]
-    elif graph_choice_exploration == 'hist':
-        traces = [
-            go.Histogram(
-                x=df[yvars],
-            ),
-        ]
-    elif graph_choice_exploration == 'correl':
-        traces = [
-            go.Heatmap(z = [
-                df[xvars],
-                df[yvars],
-                ]),
-        ]
-    elif graph_choice_exploration == 'bubble':
+    if graph_choice_exploration == 'line_chart':
+        traces = graphs2d.line_chart(df[xvars], df[yvars])
+
+    elif graph_choice_exploration == 'scatterplot':
+        traces = graphs2d.scatterplot(df[xvars], df[yvars])
+
+    elif graph_choice_exploration == 'histogram':
+        traces = graphs2d.histogram(df[xvars])
+
+    elif graph_choice_exploration == 'heatmap':
+        traces = graphs2d.heatmap(df[xvars], df[yvars])
+
+    elif graph_choice_exploration == 'bubble_chart':
         size = [20, 40, 60, 80, 100, 80, 60, 40, 20, 40]
-        traces = [
-            go.Scatter(
-                x=df[xvars],
-                y=df[yvars],
-                mode='markers',
-                marker=dict(
-                    size=size,
-                    sizemode='area',
-                    sizeref=2.*max(size)/(40.**2),
-                    sizemin=4
-                )
-            ),
-        ]
+        traces = graphs2d.bubble_chart(df[xvars], df[yvars], size)
 
     elif graph_choice_exploration == 'pie':
         traces = [go.Pie(labels = df[xvars], values = df[yvars])]
 
     elif graph_choice_exploration == 'filledarea':
-        traces = [
-            go.Scatter(
-                x=df[xvars],
-                y=df[yvars],
-                fill='tonexty',
-            ),
-        ]
+        traces = graphs2d.filledarea(df[xvars], df[yvars])
+
     elif graph_choice_exploration == 'errorbar':
-        std = [df.std()[yvars] for y in df[yvars]]
-        traces = [
-            go.Scatter(
-                x=df[xvars],
-                y=df[yvars],
-                error_y=dict(
-                type='data',
-                symmetric=False,
-                array=std,
-                arrayminus=std),
-            ),
-        ]
-    elif graph_choice_exploration == '2ddensity':
-        traces = [
-            go.Scatter(
-                x=df[xvars],
-                y=df[yvars],
-                mode='markers',
-                marker=dict(
-                    color = 'rgb(102,0,0)',
-                    size=2,
-                    opacity = 0.2
-                )
-            ),
-        ] + [ go.Histogram2dContour(
-                x = df[xvars],
-                y = df[yvars],
-                name = 'density',
-                ncontours=20,
-                colorscale='Hot',
-                reversescale=True,
-                showscale=False
-            ),
-        ]
+        traces = graphs2d.errorbar(df[xvars], df[yvars])
+
+    elif graph_choice_exploration == 'density2d':
+        traces = graphs2d.density2d(df[xvars], df[yvars])
 
     else:
         traces = []
