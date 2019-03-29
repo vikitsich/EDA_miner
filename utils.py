@@ -1,3 +1,11 @@
+"""
+    This module provides utilities, functions, and other code that is
+    meant to be used across the app. This may undergo changes soon.
+
+    You should probably not write code here.
+"""
+
+
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.svm import SVR
 from sklearn.tree import DecisionTreeRegressor

@@ -1,3 +1,12 @@
+"""
+    This module contains the implementations of graphing
+    functions. Every graph has its own line in the config
+    which indicates if the graph needs both X and Y variables
+    and whether the Y variables should be multiple.
+
+    You can freely write code in this module, without worries.
+"""
+
 import plotly.graph_objs as go
 import numpy as np
 
@@ -52,7 +61,16 @@ def histogram(x):
     return [go.Histogram(x=x)]
 
 def heatmap(x, y):
-    return [go.Heatmap(z=[x, y])]
+
+    if not (len(x.shape)>1 and x.shape[1] <2):
+        x = np.atleast_2d(x).T
+
+    if not (len(y.shape)>1 and y.shape[1] <2):
+        y = np.atleast_2d(y).T
+
+
+    data = np.concatenate([x,y], 1)
+    return [go.Heatmap(z=np.corrcoef(data.T))]
 
 def bubble_chart(x, y, size):
     marker = dict(size=size,

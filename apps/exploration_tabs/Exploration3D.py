@@ -1,3 +1,12 @@
+"""
+    This module will be used to plot 3D graphs.
+
+    You can write code in this module, but keep in
+    mind that it may be moved later on to lower-level
+    modules. Also, there is a chance that this will be
+    moved entirely into another tab.
+"""
+
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html

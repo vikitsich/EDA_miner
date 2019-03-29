@@ -1,3 +1,12 @@
+"""
+    The main app is here. It takes the base menus from menus.py
+    and puts them in the app.layout, then defines callbacks
+    and finally has the if-name-main block necessary to run the app.
+
+    You should probably not write code here.
+"""
+
+
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
@@ -6,74 +15,19 @@ import dash_table
 import dash_callback_chain as chainvis
 
 from server import app
-from apps import data_view, exploration_view, analyze_view, exploration_tabs
-from apps.exploration_tabs import KPIs
 from utils import cleanup, r
-from menus import SideBar, MainMenu
+from menus import SideBar, MainMenu, landing_page, serve_layout
+from apps.exploration_tabs import KPIs
+from apps import data_view, exploration_view, analyze_view, exploration_tabs
 
 from functools import partial
 import pandas as pd
 import base64
 import datetime
 import io
-import atexit
 import signal
-import uuid
 import redis
 
-
-
-def serve_layout():
-    """
-        The layout of our app needs to be inside a function
-        so that every time some new session starts a new
-        session_id is generated.
-    """
-
-    # TODO: append above uuid to a Redis list.
-    session_id = str(uuid.uuid4())
-
-    return html.Div(children=[
-
-        # TODO: Better implementation of sessions.
-        # This generates a unique id for the session, based on which
-        # one can keep his data in disk. This may need changing to
-        # either using tokens or to some login form
-        # TAKE A LOOK AT dcc.Store
-        html.H2(session_id, id="session_id", style={"display":"none"}),
-        html.H2(session_id, id="user_id", style={"display":"none"}),
-
-        # Sidebar / menu
-        html.Div(children=SideBar, className="two columns", id="sidebar"),
-
-        # main Div
-        html.Div(children=MainMenu, className="nine columns", id="mainmenu"),
-
-    ], className="row", style={"display": "none"}, id="main_page")
-
-
-landing_page = html.Div([
-        html.H2("Welcome to our app! :D"),
-        html.H4("Would you like to login?"),
-        dcc.RadioItems(
-            options=[
-                {'label': 'Yes, log me in', 'value': 'yes'},
-                {'label': 'No, leave me alone', 'value': 'no'}
-            ],
-            value='yes',
-            labelStyle={'display': 'inline-block',
-                        "padding":"10px"},
-            id="login_choice",
-        ),
-        html.Div(id="landing_page_form", children=[
-            html.Div(id="login_form", children=[
-                dcc.Input("username", type="text", value="",
-                          placeholder="username"),
-            ], style={"display":"none"}),
-
-        ]),
-        html.Div(html.Button("Submit", id="submit_login_choice")),
-    ], id="landing_page")
 
 
 app.layout = html.Div([

@@ -1,3 +1,10 @@
+"""
+    This module is only here because of the Dash app spanning multiple files.
+    General configurations of the underlying app and server go here.
+
+    DO NOT MODIFY WITHOUT PERSMISSION!
+"""
+
 from dash import Dash
 import dash_bootstrap_components as dbc
 

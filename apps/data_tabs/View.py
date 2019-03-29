@@ -1,3 +1,11 @@
+"""
+    This module provides views for the data (tables, lists
+    of tweets, etc). 
+
+    You should probably not write code here, UNLESS you
+    defined a new connection to an API.
+"""
+
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html

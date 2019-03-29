@@ -1,3 +1,13 @@
+"""
+    This module defines the interface for connecting to APIs.
+    It is mainly intended for providing the layouts, rather
+    than implementing the connection functions. These will
+    probably be moved to another file soon.
+
+    You should probably not write code here, UNLESS you first
+    defined a new connection to an API (also update View module).
+"""
+
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html

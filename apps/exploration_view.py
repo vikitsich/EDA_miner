@@ -1,3 +1,11 @@
+"""
+    This module takes care of the menu and choices provided when the
+    "Explore & Visualize" level-1 tab is selected.
+
+    You should probably not write code here, UNLESS you are defining
+    a new level-2 tab.
+"""
+
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html

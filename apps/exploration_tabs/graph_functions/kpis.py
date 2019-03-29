@@ -1,3 +1,11 @@
+"""
+    This module contains the implementations of graphing
+    functions, and will probably contain core logic for KPI
+    creation. This should mirror the graphs2d module.
+
+    You can freely write code in this module.
+"""
+
 import plotly.graph_objs as go
 
 # TODO: add layout parameters

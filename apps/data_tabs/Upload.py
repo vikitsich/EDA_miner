@@ -1,3 +1,12 @@
+"""
+    This module provides an interface for uploading and
+    handling of files.
+
+    You should probably not write code here, unless you
+    mean to implement new filetype uploads or other types
+    of upload handling (i.e. multi-file uploads).
+"""
+
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html

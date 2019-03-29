@@ -1,3 +1,12 @@
+"""
+    This module defines the available graphs and creates the
+    interface for the 2D dashboard. You can use this module
+    if you want to add new buttons, input, or other, or maybe
+    a new type of graph (in which case also modify graphs2d.py).
+
+    You should only write code here with caution.
+"""
+
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html

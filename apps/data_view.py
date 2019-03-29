@@ -1,3 +1,11 @@
+"""
+    This module takes care of the menu and choices provided when the
+    "Data view" level-1 tab is selected.
+
+    You should probably not write code here, UNLESS you are defining
+    a new level-2 tab.
+"""
+
 from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
@@ -42,10 +50,13 @@ def tab_subpages(tab, user_id):
     """
 
     if tab == 'upload_data':
+        # TODO: This might need change, depending on whether we specify
+        # different privileges for logged-in users.
         return Upload_Options
 
     elif tab == "view_data":
         return View_Options(user_id)
 
     elif tab == "api_data":
+        # TODO: This might need change when the login is implemented
         return API_Options
